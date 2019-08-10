@@ -1,7 +1,8 @@
 <template>
   <div class="container">
     <div class="background-track"></div>
-    <div class="progress" :style="{ width: progress + '%' }"></div>
+    <div class="progress" :style="{width:progress+'%'}"></div>
+    <div class="handler" :style="{left:progress+'%'}"></div>
   </div>
 </template>
 <script>
@@ -41,5 +42,18 @@ export default {
   border-radius: 3px;
   background-color: #409eff;
   z-index: 2000;
+}
+.handler {
+  position: absolute;
+  height: 8px;
+  width: 8px;
+  border: 2px solid #409eff;
+  border-radius: 50%;
+  background-color: white;
+  z-index: 3000;
+  transform: translate(-50%, -4px); /* 调整一下居中 */
+}
+.handler:hover {
+  cursor: pointer;
 }
 </style>
