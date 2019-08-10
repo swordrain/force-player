@@ -1,13 +1,16 @@
 <template>
-  <div ref="track" class="container" :style="{'point-event':disabled?'none':'inherit'}">
+  <div
+    ref="track"
+    class="container"
+    :style="{'point-event':disabled?'none':'inherit'}"
+    @click="jumpProgress"
+  >
     <div class="background-track"></div>
     <div class="progress" :style="{width:innerProgress+'%'}"></div>
     <div class="handler" :style="{left:innerProgress+'%'}" @mousedown="startDragging"></div>
   </div>
 </template>
 <script>
-import debounce from "lodash/debounce";
-console.log(debounce);
 export default {
   props: {
     progress: {
@@ -42,12 +45,12 @@ export default {
       }
     },
     dragging: function(e) {
-      //加上防抖
       if (this.isDragging) {
         const width = getComputedStyle(this.$refs.track).width;
         this.innerProgress =
           this.draggingOriginProgress +
           ((e.clientX - this.draggingOriginPoint) / parseInt(width)) * 100;
+        this.$emit("progressChanged", this.innerProgress);
       }
     },
     endDragging: function() {
@@ -57,6 +60,11 @@ export default {
         document.removeEventListener("mousemove", this.dragging);
         document.removeEventListener("mouseup", this.endDragging);
       }
+    },
+    jumpProgress: function(e) {
+      this.innerProgress =
+        (e.offsetX / parseInt(getComputedStyle(this.$refs.track).width)) * 100;
+      this.$emit("progressChanged", this.innerProgress);
     }
   }
 };
@@ -94,9 +102,9 @@ export default {
   border-radius: 50%;
   background-color: white;
   z-index: 3000;
-  transform: translate(-50%, -4px); /* 调整一下居中 */
+  transform: translate(-50%, -4px); /*  居中 */
 }
-.handler:hover {
+.container:hover {
   cursor: pointer;
 }
 </style>
