@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Track/>
+    <Track :progress="30"/>
   </div>
 </template>
 
