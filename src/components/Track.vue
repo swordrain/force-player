@@ -1,11 +1,13 @@
 <template>
-  <div class="container">
+  <div ref="track" class="container" :style="{'point-event':disabled?'none':'inherit'}">
     <div class="background-track"></div>
-    <div class="progress" :style="{width:progress+'%'}"></div>
-    <div class="handler" :style="{left:progress+'%'}"></div>
+    <div class="progress" :style="{width:innerProgress+'%'}"></div>
+    <div class="handler" :style="{left:innerProgress+'%'}" @mousedown="startDragging"></div>
   </div>
 </template>
 <script>
+import debounce from "lodash/debounce";
+console.log(debounce);
 export default {
   props: {
     progress: {
@@ -13,6 +15,47 @@ export default {
       default: 50,
       validator: function(value) {
         return value >= 0 && value <= 100;
+      }
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  data: function() {
+    return {
+      innerProgress: this.progress,
+      isDragging: false,
+      draggingOriginPoint: 0
+    };
+  },
+  methods: {
+    startDragging: function(e) {
+      if (!this.disabled) {
+        this.$emit("startDragging");
+        this.isDragging = true;
+        this.draggingOriginPoint = e.clientX;
+        this.draggingOriginProgress = this.innerProgress;
+        document.addEventListener("mousemove", this.dragging);
+        document.addEventListener("mouseup", this.endDragging);
+      }
+    },
+    dragging: function(e) {
+      //加上防抖
+      if (this.isDragging) {
+        const width = getComputedStyle(this.$refs.track).width;
+        this.innerProgress =
+          this.draggingOriginProgress +
+          ((e.clientX - this.draggingOriginPoint) / parseInt(width)) * 100;
+      }
+    },
+    endDragging: function() {
+      if (this.isDragging) {
+        this.$emit("endDragging");
+        this.isDragging = false;
+        document.removeEventListener("mousemove", this.dragging);
+        document.removeEventListener("mouseup", this.endDragging);
       }
     }
   }
