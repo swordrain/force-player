@@ -1,7 +1,7 @@
 <template>
   <div
     ref="track"
-    class="container"
+    class="track-container"
     :style="{'point-event':disabled?'none':'inherit'}"
     @click="jumpProgress"
   >
@@ -70,7 +70,7 @@ export default {
 };
 </script>
 <style scoped>
-.container {
+.track-container {
   position: relative;
 }
 .background-track {
