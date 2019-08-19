@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <force-player cover="/cover.gif" width="640px" height="360px">
+    <force-player cover="/cover.gif" width="640px" height="360px" title="sample">
       <source src="/sample.mp4" type="video/mp4" />
     </force-player>
   </div>

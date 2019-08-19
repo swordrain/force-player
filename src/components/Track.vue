@@ -1,12 +1,7 @@
 <template>
-  <div
-    ref="track"
-    class="track-container"
-    :style="{'point-event':disabled?'none':'inherit'}"
-    @click="jumpProgress"
-  >
-    <div class="background-track"></div>
-    <div class="progress" :style="{width:innerProgress+'%'}"></div>
+  <div ref="track" class="track-container" :style="{'point-event':disabled?'none':'inherit'}">
+    <div class="background-track" @click="jumpProgress"></div>
+    <div class="progress" :style="{width:innerProgress+'%'}" @click="jumpProgress"></div>
     <div class="handler" :style="{left:innerProgress+'%'}" @mousedown="startDragging"></div>
   </div>
 </template>
@@ -25,13 +20,17 @@ export default {
       default: false
     }
   },
-
   data: function() {
     return {
       innerProgress: this.progress,
       isDragging: false,
       draggingOriginPoint: 0
     };
+  },
+  watch: {
+    progress: function() {
+      this.innerProgress = this.progress;
+    }
   },
   methods: {
     startDragging: function(e) {
@@ -50,12 +49,14 @@ export default {
         this.innerProgress =
           this.draggingOriginProgress +
           ((e.clientX - this.draggingOriginPoint) / parseInt(width)) * 100;
-        this.$emit("progressChanged", this.innerProgress);
+        this.innerProgress < 0 && (this.innerProgress = 0);
+        this.innerProgress > 100 && (this.innerProgress = 100);
+        this.$emit("progressChanging", this.innerProgress);
       }
     },
-    endDragging: function() {
+    endDragging: function(e) {
       if (this.isDragging) {
-        this.$emit("endDragging");
+        this.$emit("progressChanged", this.innerProgress);
         this.isDragging = false;
         document.removeEventListener("mousemove", this.dragging);
         document.removeEventListener("mouseup", this.endDragging);
@@ -72,6 +73,7 @@ export default {
 <style scoped>
 .track-container {
   position: relative;
+  flex: 1;
 }
 .background-track {
   position: absolute;
@@ -104,7 +106,7 @@ export default {
   z-index: 3000;
   transform: translate(-50%, -4px); /*  居中 */
 }
-.container:hover {
+.track-container:hover {
   cursor: pointer;
 }
 </style>
